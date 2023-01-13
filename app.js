@@ -2,11 +2,13 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const { errors } = require('celebrate');
 const helmet = require('helmet');
 const { rateLimit } = require('express-rate-limit');
 
 const routes = require('./routes/routes');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
+const error = require('./middlewares/error');
 const cors = require('./middlewares/cors');
 
 const { NODE_ENV, DB_ADDRESS } = process.env;
@@ -35,5 +37,8 @@ app.use(limiter);
 app.use(routes);
 
 app.use(errorLogger);
+
+app.use(errors());
+app.use(error);
 
 app.listen(PORT);
