@@ -120,7 +120,7 @@ module.exports.signIn = (req, res, next) => {
           maxAge: 3600000,
           httpOnly: true,
           sameSite: true,
-          domain: 'eliproject.students.nomoredomains.rocks',
+          domain: NODE_ENV === 'production' ? 'eliproject.students.nomoredomains.rocks' : 'localhost',
         });
       return res.send({ data: 'Авторизация прошла успешно!' });
     })

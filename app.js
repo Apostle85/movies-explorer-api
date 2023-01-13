@@ -9,6 +9,8 @@ const routes = require('./routes/routes');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const cors = require('./middlewares/cors');
 
+const { NODE_ENV, DB_ADDRESS } = process.env;
+
 const app = express();
 const PORT = 3000;
 
@@ -25,7 +27,7 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-mongoose.connect('mongodb://127.0.0.1:27017/bitfilmsdb');
+mongoose.connect(NODE_ENV === 'production' ? DB_ADDRESS : 'mongodb://127.0.0.1:27017/bitfilmsdb');
 
 app.use(requestLogger);
 app.use(limiter);
