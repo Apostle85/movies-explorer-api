@@ -4,6 +4,13 @@ const NotFoundError = require('../errors/NotFoundError');
 const IncorrectDataError = require('../errors/IncorrectDataError');
 const NotEnoughRightsError = require('../errors/NotEnoughRightsError');
 
+const {
+  INCORRECT_CREATE_MOVIE_DATA_ERROR,
+  MOVIE_NOT_FOUND_ERROR,
+  NOT_ENOUGH_RIGHTS_TO_DELETE_MOVIE_ERROR,
+  INCORRECT_DELETE_MOVIE_DATA_ERROR,
+} = require('../constants/errorMessages');
+
 module.exports.getMovies = (req, res, next) => {
   Movie.find({ owner: req.user._id })
     .then((movies) => res.send({ data: movies }))
@@ -44,7 +51,7 @@ module.exports.createMovie = (req, res, next) => {
       if (err.name === 'ValidationError') {
         next(
           new IncorrectDataError(
-            'Введены некорректные данные для создания карточки',
+            INCORRECT_CREATE_MOVIE_DATA_ERROR,
           ),
         );
       }
@@ -57,22 +64,22 @@ module.exports.deleteMovie = (req, res, next) => {
 
   Movie.findOne({ movieId })
     .then((movie) => {
-      if (!movie) throw new NotFoundError('Запрашиваемая карточка не найдена');
+      if (!movie) throw new NotFoundError(MOVIE_NOT_FOUND_ERROR);
       if (req.user._id !== movie.owner.toString()) {
-        throw new NotEnoughRightsError('Недостаточно прав для удаления карточки');
+        throw new NotEnoughRightsError(NOT_ENOUGH_RIGHTS_TO_DELETE_MOVIE_ERROR);
       }
 
       return Movie.deleteOne({ movieId });
     })
     .then((newMovie) => {
       if (newMovie.deletedCount === 0) {
-        throw new NotFoundError('Запрашиваемая карточка не найдена');
+        throw new NotFoundError(MOVIE_NOT_FOUND_ERROR);
       }
 
       return res.send({ data: newMovie });
     })
     .catch((err) => {
-      if (err.name === 'CastError') next(new IncorrectDataError('Введены некорректные данные для удаления карточки'));
+      if (err.name === 'CastError') next(new IncorrectDataError(INCORRECT_DELETE_MOVIE_DATA_ERROR));
       next(err);
     });
 };

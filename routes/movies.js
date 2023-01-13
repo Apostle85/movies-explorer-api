@@ -17,7 +17,7 @@ router.post('/', celebrate({
     nameRU: Joi.string().required(),
     nameEN: Joi.string().required(),
     thumbnail: Joi.string().required().pattern(regExHTTP),
-    movieId: Joi.string().length(24).hex().required(),
+    movieId: Joi.number().required(),
   }),
 }), createMovie);
 router.delete('/:movieId', celebrate({
